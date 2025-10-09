@@ -11,7 +11,7 @@ eventos_df = eventos_df.drop(eventos_df.index[0])
 eventos_df = eventos_df.reset_index(drop=True)
 #eventos_df
 
-periodicos_df = pd.read_excel('/content/classificacoes_publicadas_ciencia_da_computacao_2022_1721678829186.xlsx')
+periodicos_df = pd.read_excel('classificacoes_publicadas_ciencia_da_computacao_2022_1721678829186.xlsx')
 #periodicos_df
 # In a real Streamlit app, you would load your data here.
 # For this example, we'll assume eventos_df and periodicos_df are already created from previous steps.
