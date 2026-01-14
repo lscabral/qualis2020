@@ -11,7 +11,9 @@ eventos_df = eventos_df.drop(eventos_df.index[0])
 eventos_df = eventos_df.reset_index(drop=True)
 #eventos_df
 
-periodicos_df = pd.read_excel('classificacoes_publicadas_ciencia_da_computacao_2022_1721678829186.xlsx')
+#periodicos_df = pd.read_excel('classificacoes_publicadas_ciencia_da_computacao_2022_1721678829186.xlsx')
+periodicos_df = pd.read_excel('classificacoes_publicadas_computacao_2026_1768259614570.xlsx')
+
 #periodicos_df
 # In a real Streamlit app, you would load your data here.
 # For this example, we'll assume eventos_df and periodicos_df are already created from previous steps.
@@ -28,7 +30,7 @@ except NameError:
     st.stop()
 
 
-st.title('Consulta de Eventos e Periódicos de Computação segundo Qualis Capes (2017-2020)')
+st.title('Consulta de Eventos (2017-2020) e Periódicos (2021-2024) de Computação segundo Qualis Capes')
 
 # Create tabs
 tab1, tab2 = st.tabs(["Periódicos", "Eventos"])
