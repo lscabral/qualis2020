@@ -2,3 +2,4 @@ pandas
 streamlit
 openpyxl
 altair
+altair.vegalite.v4
