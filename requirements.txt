@@ -1,5 +1,4 @@
 pandas
 streamlit
 openpyxl
-altair
-altair.vegalite.v4
+altair<5
