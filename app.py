@@ -1,15 +1,23 @@
 import streamlit as st
 import pandas as pd
+import warnings
+warnings.simplefilter("ignore", UserWarning)
 
 # Load the dataframes (assuming they are available in the Colab environment)
 
-eventos_df = pd.read_excel('09012022_CLASSIFICACAODEEVENTOSPARA20172020.xlsx', sheet_name='Lista', header=None)
+eventos_df = pd.read_excel(
+    '09012022_CLASSIFICACAODEEVENTOSPARA20172020.xlsx',
+    sheet_name='Lista',
+    header=None,
+    engine='openpyxl'
+)
 eventos_df.columns = ['Sigla', 'Título', 'Estrato']
 eventos_df = eventos_df.drop(eventos_df.index[1])
 eventos_df = eventos_df.drop(eventos_df.index[0])
 #eventos_df = eventos_df.drop(eventos_df.index[1])
 eventos_df = eventos_df.reset_index(drop=True)
 #eventos_df
+
 
 #periodicos_df = pd.read_excel('classificacoes_publicadas_ciencia_da_computacao_2022_1721678829186.xlsx')
 periodicos_df = pd.read_excel('classificacoes_publicadas_computacao_2026_1768259614570.xlsx')
