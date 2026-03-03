@@ -1,76 +1,116 @@
 import streamlit as st
 import pandas as pd
 import warnings
+
 warnings.simplefilter("ignore", UserWarning)
 
-# Load the dataframes (assuming they are available in the Colab environment)
+st.set_page_config(layout="wide")
 
-eventos_df = pd.read_excel(
-    '09012022_CLASSIFICACAODEEVENTOSPARA20172020.xlsx',
-    sheet_name='Lista',
-    header=None,
-    engine='openpyxl'
-)
-eventos_df.columns = ['Sigla', 'Título', 'Estrato']
-eventos_df = eventos_df.drop(eventos_df.index[1])
-eventos_df = eventos_df.drop(eventos_df.index[0])
-#eventos_df = eventos_df.drop(eventos_df.index[1])
-eventos_df = eventos_df.reset_index(drop=True)
-#eventos_df
+# =========================
+# FUNÇÃO PARA CARREGAMENTO
+# =========================
+@st.cache_data
+def load_data():
+
+    # ===== EVENTOS 2025 =====
+    eventos_path = "Computação_Classificação de Eventos 2025.xlsx"
+    eventos_df = pd.read_excel(
+        eventos_path,
+        engine="openpyxl"
+    )
+
+    # Normalizar nomes de colunas
+    eventos_df.columns = eventos_df.columns.str.strip()
+
+    # Garantir colunas esperadas
+    if "Sigla" not in eventos_df.columns:
+        eventos_df.rename(columns={eventos_df.columns[0]: "Sigla"}, inplace=True)
+
+    if "Título" not in eventos_df.columns:
+        eventos_df.rename(columns={eventos_df.columns[1]: "Título"}, inplace=True)
+
+    if "Estrato" not in eventos_df.columns:
+        eventos_df.rename(columns={eventos_df.columns[-1]: "Estrato"}, inplace=True)
 
 
-#periodicos_df = pd.read_excel('classificacoes_publicadas_ciencia_da_computacao_2022_1721678829186.xlsx')
-periodicos_df = pd.read_excel('classificacoes_publicadas_computacao_2026_1768259614570.xlsx')
+    # ===== PERIÓDICOS COMPUTAÇÃO 2026 =====
+    periodicos_path = "classificacoes_publicadas_computacao_2026_1768259614570.xlsx"
+    periodicos_df = pd.read_excel(periodicos_path)
 
-#periodicos_df
-# In a real Streamlit app, you would load your data here.
-# For this example, we'll assume eventos_df and periodicos_df are already created from previous steps.
-# Make sure these dataframes are accessible to the Streamlit app.
-# In a production setting, you might load them from a file or database.
+    periodicos_df.columns = periodicos_df.columns.str.strip()
 
-# Assuming the dataframes are available in the environment where this script is run
-# You might need to adjust how these are accessed based on your setup.
+    return eventos_df, periodicos_df
+
+
+# =========================
+# LOAD
+# =========================
 try:
-    eventos_df = pd.DataFrame(eventos_df)
-    periodicos_df = pd.DataFrame(periodicos_df)
-except NameError:
-    st.error("Dataframes 'eventos_df' or 'periodicos_df' not found. Please run the data loading cells.")
+    eventos_df, periodicos_df = load_data()
+except Exception as e:
+    st.error(f"Erro ao carregar arquivos: {e}")
     st.stop()
 
 
-st.title('Consulta de Eventos (2017-2020) e Periódicos (2021-2024) de Computação segundo Qualis Capes')
+# =========================
+# INTERFACE
+# =========================
+st.title("Consulta Qualis CAPES – Computação 2025/2026")
 
-# Create tabs
-tab1, tab2 = st.tabs(["Periódicos", "Eventos"])
+tab1, tab2 = st.tabs(["Periódicos (2026)", "Eventos (2025)"])
 
+
+# =========================
+# PERIÓDICOS
+# =========================
 with tab1:
-    st.header("Consulta de Periódicos")
-    search_term_periodicos = st.text_input('Digite o termo de busca para Periódicos (Título ou ISSN):')
+
+    st.header("Consulta de Periódicos - Computação 2026")
+
+    search_term_periodicos = st.text_input(
+        "Digite o termo de busca (Título ou ISSN):",
+        key="periodicos"
+    )
 
     if search_term_periodicos:
-        # Perform case-insensitive search on 'Título' and 'ISSN' for periodicals
-        search_results_periodicos = periodicos_df[
-            periodicos_df['Título'].str.contains(search_term_periodicos, case=False, na=False) |
-            periodicos_df['ISSN'].astype(str).str.contains(search_term_periodicos, case=False, na=False)
+
+        search_results = periodicos_df[
+            periodicos_df.astype(str)
+            .apply(lambda row: row.str.contains(search_term_periodicos, case=False, na=False))
+            .any(axis=1)
         ]
-        st.write(f"Resultados da busca por '{search_term_periodicos}' em Periódicos:")
-        st.dataframe(search_results_periodicos)
+
+        st.write(f"Resultados encontrados: {len(search_results)}")
+        st.dataframe(search_results, use_container_width=True)
+
     else:
         st.write("Digite um termo para buscar periódicos.")
-        st.dataframe(periodicos_df)
+        st.dataframe(periodicos_df, use_container_width=True)
 
+
+# =========================
+# EVENTOS
+# =========================
 with tab2:
-    st.header("Consulta de Eventos")
-    search_term_eventos = st.text_input('Digite o termo de busca para Eventos (Título ou Sigla):')
+
+    st.header("Consulta de Eventos - Computação 2025")
+
+    search_term_eventos = st.text_input(
+        "Digite o termo de busca (Título ou Sigla):",
+        key="eventos"
+    )
 
     if search_term_eventos:
-        # Perform case-insensitive search on 'Título' and 'Sigla' for events
-        search_results_eventos = eventos_df[
-            eventos_df['Título'].str.contains(search_term_eventos, case=False, na=False) |
-            eventos_df['Sigla'].str.contains(search_term_eventos, case=False, na=False)
+
+        search_results = eventos_df[
+            eventos_df.astype(str)
+            .apply(lambda row: row.str.contains(search_term_eventos, case=False, na=False))
+            .any(axis=1)
         ]
-        st.write(f"Resultados da busca por '{search_term_eventos}' em Eventos:")
-        st.dataframe(search_results_eventos)
+
+        st.write(f"Resultados encontrados: {len(search_results)}")
+        st.dataframe(search_results, use_container_width=True)
+
     else:
         st.write("Digite um termo para buscar eventos.")
-        st.dataframe(eventos_df)
+        st.dataframe(eventos_df, use_container_width=True)
