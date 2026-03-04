@@ -13,7 +13,7 @@ st.set_page_config(layout="wide")
 def load_data():
 
     # ===== EVENTOS 2025 =====
-    eventos_path = "Computação_Classificação de Eventos 2025.xlsx"
+    eventos_path = "classificacoes_eventos_computacao_2025.xlsx"
     eventos_df = pd.read_excel(
         eventos_path,
         engine="openpyxl"
@@ -29,7 +29,7 @@ def load_data():
     if "Título" not in eventos_df.columns:
         eventos_df.rename(columns={eventos_df.columns[1]: "Título"}, inplace=True)
 
-    if "Estrato" not in eventos_df.columns:
+    if "Estrato" not in eventos_df.columns  :
         eventos_df.rename(columns={eventos_df.columns[-1]: "Estrato"}, inplace=True)
 
 
@@ -81,11 +81,11 @@ with tab1:
         ]
 
         st.write(f"Resultados encontrados: {len(search_results)}")
-        st.dataframe(search_results, use_container_width=True)
+        st.dataframe(search_results, width='stretch')#use_container_width=True)
 
     else:
         st.write("Digite um termo para buscar periódicos.")
-        st.dataframe(periodicos_df, use_container_width=True)
+        st.dataframe(periodicos_df, width='stretch')#use_container_width=True)
 
 
 # =========================
@@ -109,8 +109,8 @@ with tab2:
         ]
 
         st.write(f"Resultados encontrados: {len(search_results)}")
-        st.dataframe(search_results, use_container_width=True)
+        st.dataframe(search_results, width='stretch') #use_container_width=True)
 
     else:
         st.write("Digite um termo para buscar eventos.")
-        st.dataframe(eventos_df, use_container_width=True)
+        st.dataframe(eventos_df, width='stretch') # use_container_width=True)
